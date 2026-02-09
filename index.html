@@ -100,6 +100,24 @@ body{overflow-y:auto;height:auto}
 .big-pct{font-size:36px}
 .map-controls{top:auto;bottom:10px}
 }
+
+.chip-route{margin-bottom:10px}
+.chip-route-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.chip-route-title{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.chip-route-count{font-size:10px;color:var(--accent);font-weight:700}
+.chip-grid{display:flex;flex-wrap:wrap;gap:3px}
+.chip{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:28px;padding:0 5px;border-radius:6px;font-size:10px;font-weight:800;color:#fff;cursor:pointer;transition:all .12s;-webkit-tap-highlight-color:transparent;border:2px solid transparent;font-family:Arial,sans-serif;user-select:none}
+.chip:active{transform:scale(0.88)}
+.chip-P{background:var(--red)}
+.chip-E{background:var(--yellow);color:#000}
+.chip-I{background:var(--green)}
+.chip-D{background:var(--gray)}
+.chip-flash{animation:chipflash .4s}
+@keyframes chipflash{0%{transform:scale(1.3);box-shadow:0 0 12px #28a745}100%{transform:scale(1);box-shadow:none}}
+.route-saida-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:none;color:#000;background:linear-gradient(135deg,#ffc107,#e0a800);transition:all .15s;-webkit-tap-highlight-color:transparent}
+.route-saida-btn:active{transform:scale(0.95)}
+.route-saida-btn.saiu{background:linear-gradient(135deg,#ffc107,#ff9800);opacity:0.6;text-decoration:line-through}
+.route-saida-grid{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -126,28 +144,24 @@ body{overflow-y:auto;height:auto}
 <div class="extra-box" id="boxMptr"><div class="num" id="statMptr">0/2</div><div class="lbl">MPTR</div></div>
 </div>
 <div class="section" id="controlsDiv">
-<div class="section-title">Controles Rapidos</div>
-<div class="btn-group">
-<button class="btn btn-red" onclick="marcarRoteiro('R1','EM_TRANSITO')">R1 Saiu</button>
-<button class="btn btn-blue" onclick="marcarRoteiro('R2','EM_TRANSITO')">R2 Saiu</button>
-<button class="btn btn-green" onclick="marcarRoteiro('R3','EM_TRANSITO')">R3 Saiu</button>
+<div class="section-title">Saida de Rotas <span style="font-weight:400;color:#666">(EM TRANSITO)</span></div>
+<div class="route-saida-grid">
+<button class="route-saida-btn" id="btn_R1" onclick="saidaRota('R1')">R1 Saiu</button>
+<button class="route-saida-btn" id="btn_R2" onclick="saidaRota('R2')">R2 Saiu</button>
+<button class="route-saida-btn" id="btn_R3" onclick="saidaRota('R3')">R3 Saiu</button>
+<button class="route-saida-btn" id="btn_A_PE" onclick="saidaRota('A_PE')">BPChq A Pe</button>
+<button class="route-saida-btn" id="btn_MPTR" onclick="saidaRota('MPTR')">MPTR</button>
 </div>
-<button class="btn btn-yellow" onclick="marcarRoteiro('A_PE','EM_TRANSITO')">Hub 2 (BPChq) — A Pe Saiu</button>
-<button class="btn btn-purple" onclick="marcarMPTR()">MPTR OK (APREVs 21 + 46)</button>
-<div style="margin-top:8px"><div class="section-title">Implantacao Rapida</div>
-<div class="btn-group">
-<button class="btn btn-green btn-small" onclick="marcarRoteiroImpl('R1')">R1 Impl</button>
-<button class="btn btn-green btn-small" onclick="marcarRoteiroImpl('R2')">R2 Impl</button>
-<button class="btn btn-green btn-small" onclick="marcarRoteiroImpl('R3')">R3 Impl</button>
+<div style="margin-top:6px">
+<div class="section-title">Assuncao Individual <span style="font-weight:400;color:#666">(toque = implantado)</span></div>
+<div id="chipContainer"></div>
 </div>
-<button class="btn btn-green btn-small" onclick="marcarRoteiroImpl('A_PE')" style="width:100%">Hub2 Implantado</button>
-</div>
-<div style="margin-top:8px"><div class="section-title">Fase / Turno</div>
+<div style="margin-top:10px"><div class="section-title">Fase / Turno</div>
 <div class="btn-group">
 <button class="btn btn-outline" onclick="alternarFase()">Alternar Fase</button>
 <button class="btn btn-outline" onclick="alternarTurno()">Proximo Turno</button>
 </div>
-<button class="btn btn-red btn-small" onclick="resetTurno()" style="width:100%">Reset Turno (Zerar Tudo)</button>
+<button class="btn btn-red btn-small" onclick="resetTurno()" style="width:100%;margin-top:4px">Reset Turno (Zerar Tudo)</button>
 </div></div>
 <div class="share-section" id="shareDiv">
 <div class="section-title">Compartilhar com Comando</div>
@@ -321,6 +335,7 @@ var hora=new Date().toLocaleTimeString('pt-BR');
 estado[k]={status:st,hora:hora};
 if(!silent)addLog(p.tipo+' '+p.num+(p.sub?' ('+p.sub+')':''),oldSt,st,hora);
 salvar();atualizarMapa();atualizarStats();
+if(MODO==='editor'){syncToSheet(p.tipo,p.num,st);updateChip(p.tipo,p.num);}
 }
 
 function addLog(label,from,to,hora){
@@ -531,6 +546,9 @@ var p=new URLSearchParams(location.search);
 if(p.get('csv'))SHEET_CSV_URL=p.get('csv');
 else if(p.get('sheet'))SHEET_CSV_URL='https://docs.google.com/spreadsheets/d/'+p.get('sheet')+'/gviz/tq?tqx=out:csv&sheet=Status';
 })();
+var APPS_SCRIPT_URL = '';
+// Auto-detect from URL: ?api=YOUR_APPS_SCRIPT_URL
+(function(){var p=new URLSearchParams(location.search);if(p.get('api'))APPS_SCRIPT_URL=p.get('api');})();
 var REFRESH_INTERVAL = 10000; // 10 segundos
 
 function getSheetURL(){
@@ -577,6 +595,7 @@ estado[k]={status:st.replace(/ /g,'_').toUpperCase(),hora:hora};
 }
 }
 atualizarMapa();atualizarStats();renderLog();
+if(MODO==='editor')renderChips();
 document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('pt-BR');
 })
 .catch(function(e){console.log('Sheet fetch error:',e);});
@@ -607,6 +626,7 @@ m.bindPopup(popupContent(p),{maxWidth:300,closeButton:true});
 m.addTo(map);markers[k]=m;
 });
 atualizarStats();renderLog();
+if(MODO==='editor')renderChips();
 document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('pt-BR');
 if(!turnoInicio)turnoInicio=new Date().toISOString();
 // Google Sheets auto-refresh
@@ -618,6 +638,135 @@ document.getElementById('sheetStatus').style.color='#28a745';
 }
 atualizarTimer();setInterval(atualizarTimer,60000);
 }
+
+
+// =============================================
+// CHIPS + SYNC + SAIDA DE ROTA
+// =============================================
+function syncToSheet(tipo,num,status){
+if(!APPS_SCRIPT_URL)return;
+var url=APPS_SCRIPT_URL+'?tipo='+encodeURIComponent(tipo)+'&num='+encodeURIComponent(num)+'&status='+encodeURIComponent(status);
+fetch(url,{redirect:'follow',mode:'no-cors'}).catch(function(e){console.log('Sync:',e);});
+}
+
+function syncBatchToSheet(updates){
+if(!APPS_SCRIPT_URL||!updates.length)return;
+var batch=updates.map(function(u){return u.tipo+'_'+u.num+'_'+u.status;}).join(',');
+fetch(APPS_SCRIPT_URL+'?batch='+encodeURIComponent(batch),{redirect:'follow',mode:'no-cors'}).catch(function(e){console.log('Batch sync:',e);});
+}
+
+function updateChip(tipo,num){
+var el=document.getElementById('c_'+tipo+'_'+num);
+if(!el)return;
+var p=DADOS.find(function(d){return d.tipo===tipo&&d.num===num;});
+if(!p)return;
+var st=getStatus(p);
+var cls='chip chip-'+(st==='IMPLANTADO'?'I':st==='EM_TRANSITO'?'E':st==='DESMOBILIZADO'?'D':'P');
+el.className=cls+' chip-flash';
+setTimeout(function(){el.className=cls;},400);
+updateRouteCount(p);
+}
+
+function updateRouteCount(p){
+if(p.tipo==='HUB')return;
+var rot=p.tipo==='APREV'?p.rot:(p.tipo==='POG'?'POG':'TORRE');
+var arr=DADOS.filter(function(d){
+if(p.tipo==='APREV')return d.tipo==='APREV'&&d.rot===rot;
+if(p.tipo==='POG')return d.tipo==='POG';
+return d.tipo==='TORRE';
+});
+var impl=arr.filter(function(d){var s=getStatus(d);return s==='IMPLANTADO'||s==='DESMOBILIZADO';}).length;
+var el=document.getElementById('rc_'+rot);
+if(el)el.textContent=impl+'/'+arr.length;
+}
+
+function renderChips(){
+var container=document.getElementById('chipContainer');
+if(!container)return;
+var routes={R1:[],R2:[],R3:[],A_PE:[],MPTR:[]};
+var pogs=[],torres=[];
+DADOS.forEach(function(p){
+if(p.tipo==='HUB')return;
+if(p.tipo==='TORRE'){torres.push(p);return;}
+if(p.tipo==='POG'){pogs.push(p);return;}
+var rot=p.rot||'A_PE';
+if(!routes[rot])routes[rot]=[];
+routes[rot].push(p);
+});
+var html='';
+var routeLabels={R1:'Rota 1 — 4BPM',R2:'Rota 2 — 4BPM',R3:'Rota 3 — 4BPM',A_PE:'A Pe — BPChq',MPTR:'MPTR — Tuneis'};
+['R1','R2','R3','A_PE','MPTR'].forEach(function(rot){
+var arr=routes[rot];if(!arr||!arr.length)return;
+var impl=arr.filter(function(d){var s=getStatus(d);return s==='IMPLANTADO'||s==='DESMOBILIZADO';}).length;
+html+='<div class="chip-route"><div class="chip-route-header"><span class="chip-route-title">'+(routeLabels[rot]||rot)+'</span>';
+html+='<span class="chip-route-count" id="rc_'+rot+'">'+impl+'/'+arr.length+'</span></div>';
+html+='<div class="chip-grid">';
+arr.forEach(function(p){
+var st=getStatus(p);
+var cls=st==='IMPLANTADO'?'chip-I':st==='EM_TRANSITO'?'chip-E':st==='DESMOBILIZADO'?'chip-D':'chip-P';
+html+='<span class="chip '+cls+'" id="c_'+p.tipo+'_'+p.num+'" onclick="chipTap(\''+p.tipo+'\',\''+p.num+'\')">'+p.num+'</span>';
+});
+html+='</div></div>';
+});
+if(pogs.length){
+var implP=pogs.filter(function(d){var s=getStatus(d);return s==='IMPLANTADO'||s==='DESMOBILIZADO';}).length;
+html+='<div class="chip-route"><div class="chip-route-header"><span class="chip-route-title">POGs</span>';
+html+='<span class="chip-route-count" id="rc_POG">'+implP+'/'+pogs.length+'</span></div>';
+html+='<div class="chip-grid">';
+pogs.forEach(function(p){
+var st=getStatus(p);
+var cls=st==='IMPLANTADO'?'chip-I':st==='EM_TRANSITO'?'chip-E':st==='DESMOBILIZADO'?'chip-D':'chip-P';
+html+='<span class="chip '+cls+'" id="c_'+p.tipo+'_'+p.num+'" onclick="chipTap(\''+p.tipo+'\',\''+p.num+'\')">P'+p.num+'</span>';
+});
+html+='</div></div>';
+}
+if(torres.length){
+var implT=torres.filter(function(d){var s=getStatus(d);return s==='IMPLANTADO'||s==='DESMOBILIZADO';}).length;
+html+='<div class="chip-route"><div class="chip-route-header"><span class="chip-route-title">Torres</span>';
+html+='<span class="chip-route-count" id="rc_TORRE">'+implT+'/'+torres.length+'</span></div>';
+html+='<div class="chip-grid">';
+torres.forEach(function(p){
+var st=getStatus(p);
+var cls=st==='IMPLANTADO'?'chip-I':st==='EM_TRANSITO'?'chip-E':st==='DESMOBILIZADO'?'chip-D':'chip-P';
+html+='<span class="chip '+cls+'" id="c_'+p.tipo+'_'+p.num+'" onclick="chipTap(\''+p.tipo+'\',\''+p.num+'\')">T'+p.num+'</span>';
+});
+html+='</div></div>';
+}
+container.innerHTML=html;
+}
+
+function chipTap(tipo,num){
+var p=DADOS.find(function(d){return d.tipo===tipo&&d.num===num;});
+if(!p)return;
+var st=getStatus(p);
+var newSt;
+if(fase==='DESMOBILIZACAO'){
+newSt=(st==='DESMOBILIZADO')?'IMPLANTADO':'DESMOBILIZADO';
+} else {
+if(st==='PENDENTE'||st==='EM_TRANSITO')newSt='IMPLANTADO';
+else return;
+}
+setStatus(p,newSt);
+}
+
+function saidaRota(rot){
+var arr=DADOS.filter(function(p){return p.rot===rot&&(p.tipo==='APREV');});
+var pendentes=arr.filter(function(p){return getStatus(p)==='PENDENTE';});
+if(!pendentes.length){
+var btn=document.getElementById('btn_'+rot);
+if(btn){btn.classList.add('saiu');btn.textContent=rot.replace('_',' ')+' - ja saiu';}
+return;
+}
+if(!confirm(pendentes.length+' APREVs da '+rot+' saindo. Marcar EM TRANSITO?'))return;
+var updates=[];
+pendentes.forEach(function(p){setStatus(p,'EM_TRANSITO',true);updates.push({tipo:p.tipo,num:p.num,status:'EM_TRANSITO'});});
+addLog(rot+' ('+pendentes.length+' APREVs)','PENDENTE','EM_TRANSITO',new Date().toLocaleTimeString('pt-BR'));
+salvar();atualizarMapa();atualizarStats();renderLog();renderChips();
+syncBatchToSheet(updates);
+var btn=document.getElementById('btn_'+rot);
+if(btn){btn.classList.add('saiu');btn.textContent=rot.replace('_',' ')+' saiu';}
+}
+
 
 document.addEventListener('DOMContentLoaded',init);
 </script>
