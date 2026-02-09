@@ -524,15 +524,17 @@ function atualizarTimer(){if(!turnoInicio)return;var diff=Date.now()-new Date(tu
 // GOOGLE SHEETS INTEGRATION
 // =============================================
 // Configure: cole o ID da planilha Google aqui
-var SHEET_ID = '';
-// Auto-detect SHEET_ID from URL: ?sheet=YOUR_SHEET_ID
-(function(){var m=location.search.match(/[?&]sheet=([^&]+)/);if(m)SHEET_ID=decodeURIComponent(m[1]);})();
-var SHEET_NAME = 'Status';
+var SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQdIrzrfS6AswuNJgKaYSAN5pF9mJhBehJexO5MDR8j-zWQjyM3aDI5_xyz3kPnDaJ3cCNdgMb2Nt0e/pub?gid=0&single=true&output=csv';
+// Override via URL params: ?sheet=SHEET_ID or ?csv=FULL_URL
+(function(){
+var p=new URLSearchParams(location.search);
+if(p.get('csv'))SHEET_CSV_URL=p.get('csv');
+else if(p.get('sheet'))SHEET_CSV_URL='https://docs.google.com/spreadsheets/d/'+p.get('sheet')+'/gviz/tq?tqx=out:csv&sheet=Status';
+})();
 var REFRESH_INTERVAL = 10000; // 10 segundos
 
 function getSheetURL(){
-if(!SHEET_ID) return '';
-return 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet='+encodeURIComponent(SHEET_NAME);
+return SHEET_CSV_URL;
 }
 
 function parseCSVLine(line){
@@ -566,6 +568,7 @@ if(!lines[i].trim())continue;
 var cols=parseCSVLine(lines[i]);
 var tipo=cols[tipoIdx]||'';
 var num=cols[numIdx]||'';
+if(num.length===1)num='0'+num;
 var st=cols[statusIdx]||'PENDENTE';
 var hora=cols[horaIdx]||'';
 var k=tipo+'_'+num;
@@ -607,10 +610,10 @@ atualizarStats();renderLog();
 document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('pt-BR');
 if(!turnoInicio)turnoInicio=new Date().toISOString();
 // Google Sheets auto-refresh
-if(SHEET_ID){
+if(SHEET_CSV_URL){
 fetchFromSheet();
 setInterval(fetchFromSheet,REFRESH_INTERVAL);
-document.getElementById('sheetStatus').textContent='Conectado: '+SHEET_ID.substring(0,8)+'...';
+document.getElementById('sheetStatus').textContent='Planilha conectada';
 document.getElementById('sheetStatus').style.color='#28a745';
 }
 atualizarTimer();setInterval(atualizarTimer,60000);
