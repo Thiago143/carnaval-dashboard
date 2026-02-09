@@ -569,68 +569,30 @@ return result;
 }
 
 function fetchFromSheet(){
-if(!APPS_SCRIPT_URL){
-var url=getSheetURL();
-if(!url)return;
-fetch(url,{cache:'no-store'})
-.then(function(r){return r.text();})
-.then(function(csv){
-var lines=csv.split('\n');
-if(lines.length<2)return;
-var headers=parseCSVLine(lines[0]);
-var tipoIdx=headers.indexOf('Tipo');
-var numIdx=headers.indexOf('Num');
-var statusIdx=headers.indexOf('Status');
-var horaIdx=headers.indexOf('Hora');
-if(tipoIdx<0||numIdx<0||statusIdx<0)return;
-for(var i=1;i<lines.length;i++){
-if(!lines[i].trim())continue;
-var cols=parseCSVLine(lines[i]);
-var tipo=cols[tipoIdx]||'';
-var num=cols[numIdx]||'';
-if(num.length===1)num='0'+num;
-var st=cols[statusIdx]||'PENDENTE';
-var hora=cols[horaIdx]||'';
-var k=tipo+'_'+num;
-if(estado[k]){
-estado[k]={status:st.replace(/ /g,'_').toUpperCase(),hora:hora};
-}
-}
-atualizarMapa();atualizarStats();renderLog();
-document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('pt-BR');
-})
-.catch(function(e){console.log('Sheet fetch error:',e);});
-return;
-}
-var fetchUrl=APPS_SCRIPT_URL+'?_='+Date.now();
-fetch(fetchUrl,{redirect:'follow'})
-.then(function(r){return r.json();})
-.then(function(resp){
-console.log('[SYNC] resp ok='+resp.ok+' items='+(resp.d?resp.d.length:0));
+if(!APPS_SCRIPT_URL)return;
+var url=APPS_SCRIPT_URL+'?_='+Date.now();
+fetch(url,{redirect:'follow'}).then(function(r){
+if(!r.ok)throw new Error('HTTP '+r.status);
+return r.json();
+}).then(function(resp){
+console.log('[SYNC] items='+(resp.d?resp.d.length:0));
 if(resp.ok&&resp.d){
-var changed=0;
 for(var i=0;i<resp.d.length;i++){
 var item=resp.d[i];
 var k=item.t+'_'+item.n;
-if(estado[k]){
-var oldSt=estado[k].status;
-var newSt=item.s||'PENDENTE';
-if(oldSt!==newSt)changed++;
-estado[k]={status:newSt,hora:item.h||''};
+if(estado[k]){estado[k]={status:item.s||'PENDENTE',hora:item.h||''};}
 }
-}
-console.log('[SYNC] changed='+changed);
-salvar();atualizarMapa();atualizarStats();renderLog();
+atualizarMapa();atualizarStats();
 document.getElementById('sheetStatus').textContent='Sync '+new Date().toLocaleTimeString('pt-BR');
 document.getElementById('sheetStatus').style.color='#28a745';
+document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('pt-BR');
 }
-})
-.catch(function(e){console.log('[SYNC] error:',e);
+}).catch(function(e){
+console.log('[SYNC] erro:',e);
 document.getElementById('sheetStatus').textContent='Erro sync';
 document.getElementById('sheetStatus').style.color='#dc3545';
 });
 }
-
 
 function init(){
 initEstado();
@@ -638,11 +600,6 @@ if(MODO!=='editor'){
 document.getElementById('monitor-banner').classList.add('active');
 document.getElementById('controlsDiv').style.display='none';
 document.getElementById('shareDiv').style.display='none';
-if(!APPS_SCRIPT_URL){setInterval(function(){
-if(location.hash&&location.hash.indexOf('#s=')===0){decodeStateFromHash(location.hash.substring(3));}
-else{var saved=localStorage.getItem(STORAGE_KEY);if(saved){try{var d=JSON.parse(saved);estado=d.status||estado;fase=d.fase||fase;turno=d.turno||turno;logEntries=d.log||logEntries;}catch(e){}}}
-atualizarMapa();atualizarStats();renderLog();
-},5000);}
 }
 map=L.map('map',{zoomControl:true,attributionControl:false}).setView([-22.9100,-43.1990],15);
 L.control.attribution({position:'bottomright',prefix:false}).addTo(map);
@@ -660,11 +617,11 @@ if(MODO==='editor')renderChips();
 document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('pt-BR');
 if(!turnoInicio)turnoInicio=new Date().toISOString();
 // Google Sheets auto-refresh
-if((SHEET_CSV_URL||APPS_SCRIPT_URL)&&MODO!=='editor'){
+if(APPS_SCRIPT_URL&&MODO!=='editor'){
 fetchFromSheet();
 setInterval(fetchFromSheet,REFRESH_INTERVAL);
-document.getElementById('sheetStatus').textContent='Planilha conectada';
-document.getElementById('sheetStatus').style.color='#28a745';
+document.getElementById('sheetStatus').textContent='Conectando...';
+document.getElementById('sheetStatus').style.color='#ffc107';
 }
 atualizarTimer();setInterval(atualizarTimer,60000);
 }
