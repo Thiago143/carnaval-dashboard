@@ -377,11 +377,12 @@ iconPath='M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 1
 var prefix=p.tipo==='TORRE'?'T':p.tipo==='POG'?'P':'';
 var label=prefix+p.num;
 var badgeW=label.length>2?22:16;
+var borderW=p.tipo==='POG'?1.5:2.5;
+var dash=p.tipo==='POG'?' stroke-dasharray="4 2"':'';
+var bColor=p.tipo==='POG'?'#fff':subColor;
 var svg='<svg width="'+sz+'" height="42" viewBox="0 0 '+sz+' 42">';
-// Outer white ring (Google Maps style)
-svg+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(r+1)+'" fill="#fff"/>';
-// Main colored circle
-svg+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+color+'"/>';
+// Circulo com borda da subarea (A1=Gold, A2=Silver, B1=Green, B2=Blue)
+svg+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+color+'" stroke="'+bColor+'" stroke-width="'+borderW+'"'+dash+'/>';
 // Material Design icon (nested SVG for perfect centering)
 svg+='<svg x="'+(cx-ir)+'" y="'+(cy-ir)+'" width="'+(ir*2)+'" height="'+(ir*2)+'" viewBox="0 0 24 24">';
 svg+='<path d="'+iconPath+'" fill="#fff"/></svg>';
