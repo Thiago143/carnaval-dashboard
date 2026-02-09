@@ -602,24 +602,32 @@ document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString(
 .catch(function(e){console.log('Sheet fetch error:',e);});
 return;
 }
-var cbName='_cb'+Date.now();
+var cbName='_jcb'+Math.random().toString(36).substr(2,8);
 window[cbName]=function(resp){
+console.log('[JSONP] resp ok='+resp.ok+' items='+(resp.d?resp.d.length:0));
 if(resp.ok&&resp.d){
+var changed=0;
 for(var i=0;i<resp.d.length;i++){
 var item=resp.d[i];
 var k=item.t+'_'+item.n;
-if(estado[k]){estado[k]={status:item.s||'PENDENTE',hora:item.h||''};}
+if(estado[k]){
+var oldSt=estado[k].status;
+var newSt=item.s||'PENDENTE';
+if(oldSt!==newSt)changed++;
+estado[k]={status:newSt,hora:item.h||''};
 }
+}
+console.log('[JSONP] changed='+changed);
 salvar();atualizarMapa();atualizarStats();renderLog();
-document.getElementById('sheetStatus').textContent='Sync OK';
+document.getElementById('sheetStatus').textContent='Sync '+new Date().toLocaleTimeString('pt-BR');
 document.getElementById('sheetStatus').style.color='#28a745';
 }
 try{delete window[cbName];}catch(e){}
 };
 var s=document.createElement('script');
-s.src=APPS_SCRIPT_URL+'?callback='+cbName;
-s.onload=function(){document.head.removeChild(s);};
-s.onerror=function(){document.head.removeChild(s);delete window[cbName];};
+s.src=APPS_SCRIPT_URL+'?callback='+cbName+'&_='+Date.now();
+s.onload=function(){try{document.head.removeChild(s);}catch(e){}};
+s.onerror=function(){console.log('[JSONP] error');try{document.head.removeChild(s);}catch(e){} try{delete window[cbName];}catch(e){}};
 document.head.appendChild(s);
 }
 
@@ -630,11 +638,11 @@ if(MODO!=='editor'){
 document.getElementById('monitor-banner').classList.add('active');
 document.getElementById('controlsDiv').style.display='none';
 document.getElementById('shareDiv').style.display='none';
-setInterval(function(){
+if(!APPS_SCRIPT_URL){setInterval(function(){
 if(location.hash&&location.hash.indexOf('#s=')===0){decodeStateFromHash(location.hash.substring(3));}
 else{var saved=localStorage.getItem(STORAGE_KEY);if(saved){try{var d=JSON.parse(saved);estado=d.status||estado;fase=d.fase||fase;turno=d.turno||turno;logEntries=d.log||logEntries;}catch(e){}}}
 atualizarMapa();atualizarStats();renderLog();
-},5000);
+},5000);}
 }
 map=L.map('map',{zoomControl:true,attributionControl:false}).setView([-22.9100,-43.1990],15);
 L.control.attribution({position:'bottomright',prefix:false}).addTo(map);
