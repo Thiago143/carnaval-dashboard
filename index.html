@@ -575,18 +575,23 @@ fetch(url,{redirect:'follow'}).then(function(r){
 if(!r.ok)throw new Error('HTTP '+r.status);
 return r.json();
 }).then(function(resp){
-console.log('[SYNC] items='+(resp.d?resp.d.length:0));
+console.log('[SYNC] ok='+resp.ok+' items='+(resp.d?resp.d.length:0));
 if(resp.ok&&resp.d){
+var changed=0;
 for(var i=0;i<resp.d.length;i++){
 var item=resp.d[i];
 var k=item.t+'_'+item.n;
-if(estado[k]){estado[k]={status:item.s||'PENDENTE',hora:item.h||''};}
+if(estado[k]){
+if(estado[k].status!==item.s)changed++;
+estado[k]={status:item.s||'PENDENTE',hora:item.h||''};
 }
+}
+console.log('[SYNC] changed='+changed+' ex:APREV_02='+estado['APREV_02'].status+' APREV_21='+estado['APREV_21'].status);
 atualizarMapa();atualizarStats();
-document.getElementById('sheetStatus').textContent='Sync '+new Date().toLocaleTimeString('pt-BR');
+document.getElementById('sheetStatus').textContent='Sync '+new Date().toLocaleTimeString('pt-BR')+' ('+changed+')';
 document.getElementById('sheetStatus').style.color='#28a745';
 document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('pt-BR');
-}
+} else { console.log('[SYNC] resp.ok falsy:', JSON.stringify(resp).substring(0,200)); }
 }).catch(function(e){
 console.log('[SYNC] erro:',e);
 document.getElementById('sheetStatus').textContent='Erro sync';
