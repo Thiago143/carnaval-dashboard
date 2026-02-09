@@ -610,8 +610,7 @@ var item=resp.d[i];
 var k=item.t+'_'+item.n;
 if(estado[k]){estado[k]={status:item.s||'PENDENTE',hora:item.h||''};}
 }
-atualizarMapa();atualizarStats();renderLog();
-document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('pt-BR');
+salvar();atualizarMapa();atualizarStats();renderLog();
 document.getElementById('sheetStatus').textContent='Sync OK';
 document.getElementById('sheetStatus').style.color='#28a745';
 }
