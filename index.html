@@ -103,9 +103,9 @@ body{overflow-y:auto;height:auto}
 </style>
 </head>
 <body>
-<div id="monitor-banner" class="monitor-banner">MODO MONITOR — SOMENTE LEITURA — AUTO-REFRESH 5s</div>
+<div id="monitor-banner" class="monitor-banner">MODO VISUALIZACAO — DADOS ATUALIZAM AUTOMATICAMENTE</div>
 <div id="sidebar">
-<div class="header"><h1>4o BPM — CARNAVAL 2026</h1><h2>PAINEL TATICO DE IMPLANTACAO</h2></div>
+<div class="header"><h1>4o BPM — CARNAVAL 2026</h1><h2>PAINEL TATICO — SAMBODROMO</h2></div>
 <div class="turno-bar">
 <span>Turno: <span class="val" id="turnoVal">1o (17h-01h)</span></span>
 <span>Fase: <span class="val" id="faseVal">IMPLANTACAO</span></span>
@@ -169,14 +169,14 @@ body{overflow-y:auto;height:auto}
 <div class="legend-item"><svg width="14" height="14"><circle cx="7" cy="7" r="6" fill="#6c757d"/></svg> Desmobilizado</div>
 </div>
 <div class="legend-grid" style="margin-top:6px">
-<div class="legend-item"><svg width="20" height="20" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12" fill="#888" stroke="#fff" stroke-width="1.5"/><path d="M8,18 L8,14 L11,10 L19,10 L22,14 L22,18 Z" fill="#fff" opacity="0.9"/><circle cx="11" cy="19" r="1.5" fill="#fff"/><circle cx="19" cy="19" r="1.5" fill="#fff"/></svg> APREV</div>
-<div class="legend-item"><svg width="20" height="20" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12" fill="#888" stroke="#fff" stroke-width="1.5" stroke-dasharray="4 2"/><circle cx="15" cy="10" r="2" fill="#fff"/><line x1="15" y1="12" x2="15" y2="18" stroke="#fff" stroke-width="2"/><line x1="15" y1="18" x2="11" y2="23" stroke="#fff" stroke-width="1.5"/><line x1="15" y1="18" x2="19" y2="23" stroke="#fff" stroke-width="1.5"/></svg> POG</div>
-<div class="legend-item"><svg width="20" height="20" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12" fill="#888" stroke="#fff" stroke-width="1.5"/><rect x="10" y="11" width="10" height="8" rx="1" fill="#fff" opacity="0.9"/><line x1="15" y1="5" x2="15" y2="11" stroke="#fff" stroke-width="2"/><line x1="12" y1="7" x2="18" y2="7" stroke="#fff" stroke-width="1.5"/></svg> Torre</div>
+<div class="legend-item"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#888"/><g transform="scale(0.7) translate(5,5)"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z" fill="#fff"/></g></svg> APREV</div>
+<div class="legend-item"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#888" stroke="#fff" stroke-width="0.5" stroke-dasharray="3 1.5"/><g transform="scale(0.7) translate(5,4)"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7" fill="#fff"/></g></svg> POG</div>
+<div class="legend-item"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#888"/><g transform="scale(0.7) translate(5,5)"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="#fff"/></g></svg> Torre</div>
 <div class="legend-item"><svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12,1 15,9 23,9 17,14 19,22 12,17 5,22 7,14 1,9 9,9" fill="#FFD700" stroke="#333" stroke-width="1"/></svg> Hub</div>
 </div>
 <div style="margin-top:6px;font-size:9px;color:#555">Borda do pin = subarea: <span style="color:#FFD700">A1</span> | <span style="color:#C0C0C0">A2</span> | <span style="color:#00E676">B1</span> | <span style="color:#448AFF">B2</span></div>
 </div>
-<div class="footer">Ultima atualizacao: <span class="ts" id="lastUpdate">--</span><br><span style="color:#444">4o BPM — Sambodromo — Carnaval 2026</span></div>
+<div class="footer"><span id="sheetStatus" style="color:#dc3545;font-size:9px">Offline (localStorage)</span><br>Ultima atualizacao: <span class="ts" id="lastUpdate">--</span><br><span style="color:#444">4o BPM — Sambodromo — Carnaval 2026</span></div>
 </div>
 <div class="map-controls" id="mapControls">
 <button class="map-btn active" onclick="setTile('dark')" id="btnDark">Noturno</button>
@@ -272,11 +272,12 @@ var STATUS_COLORS={PENDENTE:'#dc3545',EM_TRANSITO:'#ffc107',IMPLANTADO:'#28a745'
 var STATUS_NAMES={PENDENTE:'PENDENTE',EM_TRANSITO:'EM TRANSITO',IMPLANTADO:'IMPLANTADO',DESMOBILIZADO:'DESMOBILIZADO'};
 var SUBAREA_COLORS={A1:'#FFD700',A2:'#C0C0C0',B1:'#00E676',B2:'#448AFF'};
 var STORAGE_KEY='dashboard-carnaval-2026-v3';
-var MODO='operador';
+var MODO='viewer';
 var estado={},fase='IMPLANTACAO',turno=1,turnoInicio=null,markers={},map,currentTileLayer;
 var logEntries=[],MAX_LOG=30;
 
-if(location.search.indexOf('modo=monitor')>=0)MODO='monitor';
+if(location.search.indexOf('modo=editor')>=0)MODO='editor';
+else if(location.search.indexOf('modo=monitor')>=0)MODO='viewer';
 
 var TILES={
 dark:{url:'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',attr:'OSM, CARTO'},
@@ -296,7 +297,7 @@ localStorage.setItem('dash-tile',name);
 function initEstado(){
 if(location.hash&&location.hash.indexOf('#s=')===0){
 decodeStateFromHash(location.hash.substring(3));
-MODO='monitor';salvar();return;
+MODO='viewer';salvar();return;
 }
 var saved=localStorage.getItem(STORAGE_KEY);
 if(saved){try{var d=JSON.parse(saved);estado=d.status||{};fase=d.fase||'IMPLANTACAO';turno=d.turno||1;turnoInicio=d.turnoInicio||null;logEntries=d.log||[];}catch(e){estado={};}}
@@ -341,6 +342,7 @@ el.innerHTML=html;
 function createIcon(p){
 var st=getStatus(p);var color=STATUS_COLORS[st]||'#dc3545';var svg;
 var subColor=SUBAREA_COLORS[p.sub]||'#fff';
+var sz=32,r=13;
 
 if(p.tipo==='HUB'){
 svg='<svg width="44" height="44" viewBox="0 0 44 44">'
@@ -349,50 +351,34 @@ svg='<svg width="44" height="44" viewBox="0 0 44 44">'
 return L.divIcon({html:svg,className:'',iconSize:[44,44],iconAnchor:[22,22],popupAnchor:[0,-22]});
 }
 
+// Material Design icon paths (same icon library as Google Maps)
+var iconPath='';
+var iconTransform='';
 if(p.tipo==='TORRE'){
-svg='<svg width="34" height="48" viewBox="0 0 34 48">'
-+'<circle cx="17" cy="16" r="14" fill="'+color+'" stroke="'+subColor+'" stroke-width="2.5"/>'
-+'<line x1="17" y1="4" x2="17" y2="9" stroke="#fff" stroke-width="2" stroke-linecap="round"/>'
-+'<line x1="13" y1="6" x2="21" y2="6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>'
-+'<circle cx="14" cy="6" r="1" fill="#fff"/><circle cx="20" cy="6" r="1" fill="#fff"/>'
-+'<rect x="11" y="11" width="12" height="10" rx="1.5" fill="#fff" opacity="0.9"/>'
-+'<rect x="12.5" y="12.5" width="3.5" height="3" rx="0.5" fill="'+color+'" opacity="0.5"/>'
-+'<rect x="18" y="12.5" width="3.5" height="3" rx="0.5" fill="'+color+'" opacity="0.5"/>'
-+'<rect x="14" y="17" width="6" height="3" rx="0.5" fill="'+color+'" opacity="0.3"/>'
-+'<rect x="8" y="34" width="18" height="12" rx="3" fill="rgba(0,0,0,0.75)"/>'
-+'<text x="17" y="43" text-anchor="middle" fill="#fff" font-size="9" font-weight="800">T'+p.num+'</text>'
-+'</svg>';
-return L.divIcon({html:svg,className:'',iconSize:[34,48],iconAnchor:[17,24],popupAnchor:[0,-24]});
+// visibility / observation icon (Material Design)
+iconPath='M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z';
+iconTransform='translate(5,4) scale(0.92)';
+} else if(p.tipo==='POG'){
+// directions_walk icon (Material Design)
+iconPath='M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7';
+iconTransform='translate(5,3) scale(0.92)';
+} else {
+// directions_car icon (Material Design) — APREV
+iconPath='M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z';
+iconTransform='translate(5,4) scale(0.92)';
 }
 
-if(p.tipo==='POG'){
-svg='<svg width="34" height="48" viewBox="0 0 34 48">'
-+'<circle cx="17" cy="16" r="14" fill="'+color+'" stroke="#fff" stroke-width="2" stroke-dasharray="5 2.5"/>'
-+'<circle cx="17" cy="10" r="2.5" fill="#fff"/>'
-+'<line x1="17" y1="13" x2="17" y2="19" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>'
-+'<line x1="17" y1="19" x2="13" y2="25" stroke="#fff" stroke-width="2" stroke-linecap="round"/>'
-+'<line x1="17" y1="19" x2="21" y2="25" stroke="#fff" stroke-width="2" stroke-linecap="round"/>'
-+'<line x1="17" y1="15" x2="12" y2="18" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>'
-+'<line x1="17" y1="15" x2="22" y2="13" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>'
-+'<rect x="8" y="34" width="18" height="12" rx="3" fill="rgba(0,0,0,0.75)"/>'
-+'<text x="17" y="43" text-anchor="middle" fill="#fff" font-size="9" font-weight="800">P'+p.num+'</text>'
-+'</svg>';
-return L.divIcon({html:svg,className:'',iconSize:[34,48],iconAnchor:[17,24],popupAnchor:[0,-24]});
-}
+var borderW=p.tipo==='POG'?1.5:2.5;
+var dash=p.tipo==='POG'?' stroke-dasharray="5 2.5"':'';
+var bColor=p.tipo==='POG'?'#fff':subColor;
 
-// APREV — circulo com viatura
-svg='<svg width="34" height="48" viewBox="0 0 34 48">'
-+'<circle cx="17" cy="16" r="14" fill="'+color+'" stroke="'+subColor+'" stroke-width="2.5"/>'
-+'<path d="M9,19 L9,15 L12,11 L22,11 L25,15 L25,19 Z" fill="#fff" opacity="0.9"/>'
-+'<circle cx="12" cy="20" r="1.8" fill="#fff" opacity="0.9"/>'
-+'<circle cx="22" cy="20" r="1.8" fill="#fff" opacity="0.9"/>'
-+'<path d="M13,15 L15,11.5 L19,11.5 L21,15 Z" fill="'+color+'" opacity="0.4"/>'
-+'<rect x="10" y="13" width="2" height="1.5" rx="0.5" fill="#fff" opacity="0.7"/>'
-+'<rect x="22" y="13" width="2" height="1.5" rx="0.5" fill="#fff" opacity="0.7"/>'
-+'<rect x="8" y="34" width="18" height="12" rx="3" fill="rgba(0,0,0,0.75)"/>'
-+'<text x="17" y="43" text-anchor="middle" fill="#fff" font-size="9" font-weight="800">'+p.num+'</text>'
+svg='<svg width="'+sz+'" height="46" viewBox="0 0 '+sz+' 46">'
++'<circle cx="'+(sz/2)+'" cy="'+(sz/2)+'" r="'+r+'" fill="'+color+'" stroke="'+bColor+'" stroke-width="'+borderW+'"'+dash+'/>'
++'<g transform="'+iconTransform+'"><path d="'+iconPath+'" fill="#fff"/></g>'
++'<rect x="'+(sz/2-9)+'" y="30" width="18" height="13" rx="3" fill="rgba(0,0,0,0.8)"/>'
++'<text x="'+(sz/2)+'" y="39.5" text-anchor="middle" fill="#fff" font-size="9" font-weight="800">'+(p.tipo==='TORRE'?'T':p.tipo==='POG'?'P':'')+p.num+'</text>'
 +'</svg>';
-return L.divIcon({html:svg,className:'',iconSize:[34,48],iconAnchor:[17,24],popupAnchor:[0,-24]});
+return L.divIcon({html:svg,className:'',iconSize:[sz,46],iconAnchor:[sz/2,sz/2],popupAnchor:[0,-sz/2]});
 }
 
 function popupContent(p){
@@ -403,7 +389,7 @@ h+='<div class="popup-local">'+p.local+'</div>';
 h+='<div class="popup-status"><span class="badge" style="background:'+STATUS_COLORS[st]+';color:'+(st==='EM_TRANSITO'?'#000':'#fff')+'">'+STATUS_NAMES[st]+'</span>';
 if(hora)h+='<span class="popup-hora">'+hora+'</span>';
 h+='</div>';
-if(MODO==='operador'&&p.tipo!=='HUB'){
+if(MODO==='editor'&&p.tipo!=='HUB'){
 h+='<div class="popup-btns">';
 if(st!=='PENDENTE')h+='<button class="btn btn-red btn-small" onclick="mudar(\''+p.tipo+'\',\''+p.num+'\',\'PENDENTE\')">Pendente</button>';
 if(st!=='EM_TRANSITO')h+='<button class="btn btn-yellow btn-small" onclick="mudar(\''+p.tipo+'\',\''+p.num+'\',\'EM_TRANSITO\')">Transito</button>';
@@ -538,9 +524,67 @@ catch(e){alert('Formato invalido! Use JSON ou link compartilhado.');}
 
 function atualizarTimer(){if(!turnoInicio)return;var diff=Date.now()-new Date(turnoInicio).getTime();var h=Math.floor(diff/3600000);var m=Math.floor((diff%3600000)/60000);document.getElementById('timerVal').textContent=h+'h'+(m<10?'0':'')+m+'m';}
 
+// =============================================
+// GOOGLE SHEETS INTEGRATION
+// =============================================
+// Configure: cole o ID da planilha Google aqui
+var SHEET_ID = ''; // Ex: '1B5siXXXXXXXXXXXXXXXXXXXXXXXX'
+var SHEET_NAME = 'Status';
+var REFRESH_INTERVAL = 10000; // 10 segundos
+
+function getSheetURL(){
+if(!SHEET_ID) return '';
+return 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet='+encodeURIComponent(SHEET_NAME);
+}
+
+function parseCSVLine(line){
+var result=[];var current='';var inQuotes=false;
+for(var i=0;i<line.length;i++){
+var c=line.charAt(i);
+if(c==='"'){inQuotes=!inQuotes;}
+else if(c===','&&!inQuotes){result.push(current.trim());current='';}
+else{current+=c;}
+}
+result.push(current.trim());
+return result;
+}
+
+function fetchFromSheet(){
+var url=getSheetURL();
+if(!url)return;
+fetch(url,{cache:'no-store'})
+.then(function(r){return r.text();})
+.then(function(csv){
+var lines=csv.split('\n');
+if(lines.length<2)return;
+var headers=parseCSVLine(lines[0]);
+var tipoIdx=headers.indexOf('Tipo');
+var numIdx=headers.indexOf('Num');
+var statusIdx=headers.indexOf('Status');
+var horaIdx=headers.indexOf('Hora');
+if(tipoIdx<0||numIdx<0||statusIdx<0)return;
+for(var i=1;i<lines.length;i++){
+if(!lines[i].trim())continue;
+var cols=parseCSVLine(lines[i]);
+var tipo=cols[tipoIdx]||'';
+var num=cols[numIdx]||'';
+var st=cols[statusIdx]||'PENDENTE';
+var hora=cols[horaIdx]||'';
+var k=tipo+'_'+num;
+if(estado[k]){
+estado[k]={status:st.replace(/ /g,'_').toUpperCase(),hora:hora};
+}
+}
+atualizarMapa();atualizarStats();renderLog();
+document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('pt-BR');
+})
+.catch(function(e){console.log('Sheet fetch error:',e);});
+}
+
+
 function init(){
 initEstado();
-if(MODO==='monitor'){
+if(MODO!=='editor'){
 document.getElementById('monitor-banner').classList.add('active');
 document.getElementById('controlsDiv').style.display='none';
 document.getElementById('shareDiv').style.display='none';
@@ -564,6 +608,13 @@ m.addTo(map);markers[k]=m;
 atualizarStats();renderLog();
 document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('pt-BR');
 if(!turnoInicio)turnoInicio=new Date().toISOString();
+// Google Sheets auto-refresh
+if(SHEET_ID){
+fetchFromSheet();
+setInterval(fetchFromSheet,REFRESH_INTERVAL);
+document.getElementById('sheetStatus').textContent='Conectado: '+SHEET_ID.substring(0,8)+'...';
+document.getElementById('sheetStatus').style.color='#28a745';
+}
 atualizarTimer();setInterval(atualizarTimer,60000);
 }
 
