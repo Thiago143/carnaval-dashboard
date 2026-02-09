@@ -631,7 +631,7 @@ if(MODO==='editor')renderChips();
 document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('pt-BR');
 if(!turnoInicio)turnoInicio=new Date().toISOString();
 // Google Sheets auto-refresh
-if(SHEET_CSV_URL&&(MODO!=='editor'||APPS_SCRIPT_URL)){
+if(SHEET_CSV_URL&&MODO!=='editor'){
 fetchFromSheet();
 setInterval(fetchFromSheet,REFRESH_INTERVAL);
 document.getElementById('sheetStatus').textContent='Planilha conectada';
@@ -646,14 +646,16 @@ atualizarTimer();setInterval(atualizarTimer,60000);
 // =============================================
 function syncToSheet(tipo,num,status){
 if(!APPS_SCRIPT_URL)return;
-var url=APPS_SCRIPT_URL+'?tipo='+encodeURIComponent(tipo)+'&num='+encodeURIComponent(num)+'&status='+encodeURIComponent(status);
-fetch(url,{redirect:'follow',mode:'no-cors'}).catch(function(e){console.log('Sync:',e);});
+var url=APPS_SCRIPT_URL+'?tipo='+encodeURIComponent(tipo)+'&num='+encodeURIComponent(num)+'&status='+encodeURIComponent(status)+'&_='+Date.now();
+var img=new Image();
+img.src=url;
 }
 
 function syncBatchToSheet(updates){
 if(!APPS_SCRIPT_URL||!updates.length)return;
 var batch=updates.map(function(u){return u.tipo+'_'+u.num+'_'+u.status;}).join(',');
-fetch(APPS_SCRIPT_URL+'?batch='+encodeURIComponent(batch),{redirect:'follow',mode:'no-cors'}).catch(function(e){console.log('Batch sync:',e);});
+var img=new Image();
+img.src=APPS_SCRIPT_URL+'?batch='+encodeURIComponent(batch)+'&_='+Date.now();
 }
 
 function updateChip(tipo,num){
