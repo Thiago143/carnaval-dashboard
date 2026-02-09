@@ -588,6 +588,7 @@ estado[k]={status:item.s||'PENDENTE',hora:item.h||''};
 }
 console.log('[SYNC] changed='+changed+' ex:APREV_02='+estado['APREV_02'].status+' APREV_21='+estado['APREV_21'].status);
 atualizarMapa();atualizarStats();
+if(MODO==='editor'&&typeof renderChips==='function')renderChips();
 document.getElementById('sheetStatus').textContent='Sync '+new Date().toLocaleTimeString('pt-BR')+' ('+changed+')';
 document.getElementById('sheetStatus').style.color='#28a745';
 document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('pt-BR');
@@ -622,9 +623,11 @@ if(MODO==='editor')renderChips();
 document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('pt-BR');
 if(!turnoInicio)turnoInicio=new Date().toISOString();
 // Google Sheets auto-refresh
-if(APPS_SCRIPT_URL&&MODO!=='editor'){
+if(APPS_SCRIPT_URL){
 fetchFromSheet();
+if(MODO!=='editor'){
 setInterval(fetchFromSheet,REFRESH_INTERVAL);
+}
 document.getElementById('sheetStatus').textContent='Conectando...';
 document.getElementById('sheetStatus').style.color='#ffc107';
 }
