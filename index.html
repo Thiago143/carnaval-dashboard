@@ -547,7 +547,7 @@ var p=new URLSearchParams(location.search);
 if(p.get('csv'))SHEET_CSV_URL=p.get('csv');
 else if(p.get('sheet'))SHEET_CSV_URL='https://docs.google.com/spreadsheets/d/'+p.get('sheet')+'/gviz/tq?tqx=out:csv&sheet=Status';
 })();
-var APPS_SCRIPT_URL = '';
+var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwxL6upb_X4Vmwbazq_W1XPp3tG17wvwoPzyijHRZbNnJEUNOD1dEruAgsBrYgZeAGI9Q/exec';
 // Auto-detect from URL: ?api=YOUR_APPS_SCRIPT_URL
 (function(){var p=new URLSearchParams(location.search);if(p.get('api'))APPS_SCRIPT_URL=p.get('api');})();
 var REFRESH_INTERVAL = 10000; // 10 segundos
