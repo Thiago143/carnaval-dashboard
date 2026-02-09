@@ -9,7 +9,7 @@
 <title>4o BPM - Carnaval 2026 - Painel Tatico</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#127919;</text></svg>">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\/script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#0d0d1a;color:#e0e0e0;overflow:hidden;height:100vh}
@@ -381,10 +381,10 @@ if(hora)h+='<span class="popup-hora">'+hora+'</span>';
 h+='</div>';
 if(MODO==='operador'&&p.tipo!=='HUB'){
 h+='<div class="popup-btns">';
-if(st!=='PENDENTE')h+='<button class="btn btn-red btn-small" onclick="mudar(\''+p.tipo+"','"+p.num+"','PENDENTE')\">Pendente</button>";
-if(st!=='EM_TRANSITO')h+='<button class="btn btn-yellow btn-small" onclick="mudar(\''+p.tipo+"','"+p.num+"','EM_TRANSITO')\">Transito</button>";
-if(st!=='IMPLANTADO')h+='<button class="btn btn-green btn-small" onclick="mudar(\''+p.tipo+"','"+p.num+"','IMPLANTADO')\">Implantado</button>";
-if(st!=='DESMOBILIZADO')h+='<button class="btn btn-gray btn-small" onclick="mudar(\''+p.tipo+"','"+p.num+"','DESMOBILIZADO')\">Desmob.</button>";
+if(st!=='PENDENTE')h+='<button class="btn btn-red btn-small" onclick="mudar(\''+p.tipo+'\',\''+p.num+'\',\'PENDENTE\')">Pendente</button>';
+if(st!=='EM_TRANSITO')h+='<button class="btn btn-yellow btn-small" onclick="mudar(\''+p.tipo+'\',\''+p.num+'\',\'EM_TRANSITO\')">Transito</button>';
+if(st!=='IMPLANTADO')h+='<button class="btn btn-green btn-small" onclick="mudar(\''+p.tipo+'\',\''+p.num+'\',\'IMPLANTADO\')">Implantado</button>';
+if(st!=='DESMOBILIZADO')h+='<button class="btn btn-gray btn-small" onclick="mudar(\''+p.tipo+'\',\''+p.num+'\',\'DESMOBILIZADO\')">Desmob.</button>';
 h+='</div>';
 }
 return h;
@@ -544,6 +544,6 @@ atualizarTimer();setInterval(atualizarTimer,60000);
 }
 
 document.addEventListener('DOMContentLoaded',init);
-<\/script>
+</script>
 </body>
 </html>
