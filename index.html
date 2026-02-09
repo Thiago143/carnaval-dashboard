@@ -633,15 +633,18 @@ atualizarTimer();setInterval(atualizarTimer,60000);
 function syncToSheet(tipo,num,status){
 if(!APPS_SCRIPT_URL)return;
 var url=APPS_SCRIPT_URL+'?tipo='+encodeURIComponent(tipo)+'&num='+encodeURIComponent(num)+'&status='+encodeURIComponent(status)+'&_='+Date.now();
-var img=new Image();
-img.src=url;
+fetch(url,{redirect:'follow'}).then(function(r){return r.json();}).then(function(d){
+console.log('[WRITE] '+tipo+' '+num+' -> '+status+' ok='+d.ok);
+}).catch(function(e){console.log('[WRITE] erro:',e);});
 }
 
 function syncBatchToSheet(updates){
 if(!APPS_SCRIPT_URL||!updates.length)return;
 var batch=updates.map(function(u){return u.tipo+'_'+u.num+'_'+u.status;}).join(',');
-var img=new Image();
-img.src=APPS_SCRIPT_URL+'?batch='+encodeURIComponent(batch)+'&_='+Date.now();
+var url=APPS_SCRIPT_URL+'?batch='+encodeURIComponent(batch)+'&_='+Date.now();
+fetch(url,{redirect:'follow'}).then(function(r){return r.json();}).then(function(d){
+console.log('[BATCH] '+updates.length+' items ok='+d.ok+' count='+d.count);
+}).catch(function(e){console.log('[BATCH] erro:',e);});
 }
 
 function updateChip(tipo,num){
