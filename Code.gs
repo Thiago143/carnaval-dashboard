@@ -1,15 +1,11 @@
 function doGet(e) {
   var lock = LockService.getScriptLock();
-  try {
-    lock.waitLock(10000);
-  } catch(err) {
-    return resp({ok:false, error:"servidor ocupado"});
+  try { lock.waitLock(10000); } catch(err) {
+    return respJS(e, {ok:false, error:"busy"});
   }
-
   try {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Status");
-    if (!sheet) return resp({ok:false, error:"Aba Status nao encontrada"});
-
+    if (!sheet) return respJS(e, {ok:false, error:"no sheet"});
     var p = e.parameter;
     var data = sheet.getDataRange().getValues();
     var hora = Utilities.formatDate(new Date(), "America/Sao_Paulo", "HH:mm");
@@ -31,7 +27,7 @@ function doGet(e) {
           }
         }
       }
-      return resp({ok:true, count:count});
+      return respJS(e, {ok:true, count:count});
     }
 
     if (p.tipo && p.num && p.status) {
@@ -39,15 +35,21 @@ function doGet(e) {
       if (row2 > 0) {
         sheet.getRange(row2, 7).setValue(p.status);
         sheet.getRange(row2, 8).setValue(hora);
-        return resp({ok:true});
+        return respJS(e, {ok:true});
       }
-      return resp({ok:false, error:"Ponto nao encontrado"});
+      return respJS(e, {ok:false, error:"not found"});
     }
 
-    return resp({ok:false, error:"Parametros ausentes"});
-  } finally {
-    lock.releaseLock();
-  }
+    var result = [];
+    for (var i = 1; i < data.length; i++) {
+      if (!data[i][0]) continue;
+      var rn = String(data[i][1]);
+      if (rn.length === 1) rn = "0" + rn;
+      result.push({t:data[i][0], n:rn, s:data[i][6]||"PENDENTE", h:data[i][7]||""});
+    }
+    return respJS(e, {ok:true, d:result});
+
+  } finally { lock.releaseLock(); }
 }
 
 function findRow(data, tipo, num) {
@@ -61,7 +63,13 @@ function findRow(data, tipo, num) {
   return 0;
 }
 
-function resp(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj))
+function respJS(e, obj) {
+  var json = JSON.stringify(obj);
+  var cb = e.parameter.callback;
+  if (cb) {
+    return ContentService.createTextOutput(cb + "(" + json + ")")
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput(json)
     .setMimeType(ContentService.MimeType.JSON);
 }

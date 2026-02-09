@@ -569,6 +569,7 @@ return result;
 }
 
 function fetchFromSheet(){
+if(!APPS_SCRIPT_URL){
 var url=getSheetURL();
 if(!url)return;
 fetch(url,{cache:'no-store'})
@@ -596,10 +597,31 @@ estado[k]={status:st.replace(/ /g,'_').toUpperCase(),hora:hora};
 }
 }
 atualizarMapa();atualizarStats();renderLog();
-if(MODO==='editor')renderChips();
 document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('pt-BR');
 })
 .catch(function(e){console.log('Sheet fetch error:',e);});
+return;
+}
+var cbName='_cb'+Date.now();
+window[cbName]=function(resp){
+if(resp.ok&&resp.d){
+for(var i=0;i<resp.d.length;i++){
+var item=resp.d[i];
+var k=item.t+'_'+item.n;
+if(estado[k]){estado[k]={status:item.s||'PENDENTE',hora:item.h||''};}
+}
+atualizarMapa();atualizarStats();renderLog();
+document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('pt-BR');
+document.getElementById('sheetStatus').textContent='Sync OK';
+document.getElementById('sheetStatus').style.color='#28a745';
+}
+try{delete window[cbName];}catch(e){}
+};
+var s=document.createElement('script');
+s.src=APPS_SCRIPT_URL+'?callback='+cbName;
+s.onload=function(){document.head.removeChild(s);};
+s.onerror=function(){document.head.removeChild(s);delete window[cbName];};
+document.head.appendChild(s);
 }
 
 
@@ -631,7 +653,7 @@ if(MODO==='editor')renderChips();
 document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('pt-BR');
 if(!turnoInicio)turnoInicio=new Date().toISOString();
 // Google Sheets auto-refresh
-if(SHEET_CSV_URL&&MODO!=='editor'){
+if((SHEET_CSV_URL||APPS_SCRIPT_URL)&&MODO!=='editor'){
 fetchFromSheet();
 setInterval(fetchFromSheet,REFRESH_INTERVAL);
 document.getElementById('sheetStatus').textContent='Planilha conectada';
