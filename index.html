@@ -602,9 +602,11 @@ document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString(
 .catch(function(e){console.log('Sheet fetch error:',e);});
 return;
 }
-var cbName='_jcb'+Math.random().toString(36).substr(2,8);
-window[cbName]=function(resp){
-console.log('[JSONP] resp ok='+resp.ok+' items='+(resp.d?resp.d.length:0));
+var fetchUrl=APPS_SCRIPT_URL+'?_='+Date.now();
+fetch(fetchUrl,{redirect:'follow'})
+.then(function(r){return r.json();})
+.then(function(resp){
+console.log('[SYNC] resp ok='+resp.ok+' items='+(resp.d?resp.d.length:0));
 if(resp.ok&&resp.d){
 var changed=0;
 for(var i=0;i<resp.d.length;i++){
@@ -617,18 +619,16 @@ if(oldSt!==newSt)changed++;
 estado[k]={status:newSt,hora:item.h||''};
 }
 }
-console.log('[JSONP] changed='+changed);
+console.log('[SYNC] changed='+changed);
 salvar();atualizarMapa();atualizarStats();renderLog();
 document.getElementById('sheetStatus').textContent='Sync '+new Date().toLocaleTimeString('pt-BR');
 document.getElementById('sheetStatus').style.color='#28a745';
 }
-try{delete window[cbName];}catch(e){}
-};
-var s=document.createElement('script');
-s.src=APPS_SCRIPT_URL+'?callback='+cbName+'&_='+Date.now();
-s.onload=function(){try{document.head.removeChild(s);}catch(e){}};
-s.onerror=function(){console.log('[JSONP] error');try{document.head.removeChild(s);}catch(e){} try{delete window[cbName];}catch(e){}};
-document.head.appendChild(s);
+})
+.catch(function(e){console.log('[SYNC] error:',e);
+document.getElementById('sheetStatus').textContent='Erro sync';
+document.getElementById('sheetStatus').style.color='#dc3545';
+});
 }
 
 
