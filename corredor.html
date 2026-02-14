@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+<meta name="theme-color" content="#003366">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Corredor Seguro — Carnaval 2026 — 4o BPM</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚔</text></svg>">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'SF Pro Display','Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#f0f2f5;color:#1a1a1a;-webkit-font-smoothing:antialiased;padding-bottom:80px}
+
+/* === HERO === */
+.hero{background:linear-gradient(135deg,#001a33 0%,#003366 50%,#004080 100%);color:white;padding:28px 20px 22px;text-align:center;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;bottom:-30px;left:-10%;width:120%;height:60px;background:rgba(255,255,255,0.03);border-radius:50%;transform:rotate(-2deg)}
+.hero-badge{display:inline-block;background:rgba(255,255,255,0.12);padding:4px 14px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;backdrop-filter:blur(4px)}
+.hero h1{font-size:22px;font-weight:800;letter-spacing:0.5px;margin:6px 0 4px}
+.hero h1 span{color:#FFD700}
+.hero .sub{font-size:13px;color:rgba(255,255,255,0.7);font-weight:400}
+
+/* === LANG TOGGLE === */
+.lang-toggle{display:flex;justify-content:center;gap:0;margin:14px 20px 0;background:#e8ecf0;border-radius:12px;padding:3px;max-width:220px;margin-left:auto;margin-right:auto}
+.lang-btn{flex:1;padding:8px;text-align:center;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;border:none;background:transparent;color:#666}
+.lang-btn.active{background:white;color:#003366;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+.pt-only,.en-only{display:none}
+body.lang-pt .pt-only{display:block}
+body.lang-en .en-only{display:block}
+body.lang-pt .hide-pt{display:none}
+body.lang-en .hide-en{display:none}
+
+/* === CARDS === */
+.card{background:white;border-radius:16px;margin:14px 16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.card-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.card-title{font-size:16px;font-weight:800;color:#003366;line-height:1.2}
+.card-title small{display:block;font-size:11px;font-weight:500;color:#888;margin-top:2px}
+
+/* === ROUTE FLOW === */
+.route-flow{display:flex;align-items:center;flex-wrap:wrap;gap:4px;padding:12px;background:linear-gradient(135deg,#003366,#004080);border-radius:12px;justify-content:center}
+.route-step{color:white;font-size:11px;font-weight:700;padding:5px 10px;background:rgba(255,255,255,0.12);border-radius:8px;white-space:nowrap}
+.route-arrow{color:#FFD700;font-size:14px;font-weight:bold}
+.route-dest{width:100%;text-align:center;font-size:10px;color:rgba(255,255,255,0.5);margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.1)}
+
+/* === TIPS === */
+.tip-list{list-style:none;padding:0}
+.tip-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid #f0f2f5}
+.tip-item:last-child{border-bottom:none;padding-bottom:0}
+.tip-num{width:28px;height:28px;border-radius:50%;background:#003366;color:white;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.tip-num.orange{background:#FF8F00}
+.tip-text{font-size:14px;line-height:1.5;flex:1}
+.tip-text strong{color:#003366}
+
+/* === BULLET CARDS === */
+.bullet-grid{display:grid;gap:8px}
+.bullet-card{display:flex;align-items:center;gap:10px;padding:12px;background:#f5f8fc;border-radius:10px;font-size:13px;line-height:1.4}
+.bullet-card .bc-icon{font-size:20px;flex-shrink:0}
+
+/* === EMERGENCY === */
+.emergency-card{background:linear-gradient(135deg,#c41e3a,#d32f2f);color:white;border-radius:16px;margin:14px 16px;padding:20px;text-align:center;box-shadow:0 4px 20px rgba(196,30,58,0.3)}
+.emergency-card .em-title{font-size:28px;font-weight:900;letter-spacing:1px}
+.emergency-card .em-sub{font-size:13px;opacity:0.85;margin:4px 0 14px}
+.em-btn{display:inline-flex;align-items:center;gap:8px;background:white;color:#c41e3a;padding:14px 32px;border-radius:50px;font-size:18px;font-weight:800;text-decoration:none;box-shadow:0 4px 15px rgba(0,0,0,0.2);transition:transform .15s}
+.em-btn:active{transform:scale(0.96)}
+
+/* === CONTACTS === */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.contact-item{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f5f8fc;border-radius:10px;text-decoration:none;color:#1a1a1a;transition:background .15s}
+.contact-item:active{background:#e3f2fd}
+.contact-item .ci-icon{font-size:18px}
+.contact-item .ci-info{font-size:12px;line-height:1.3}
+.contact-item .ci-info strong{display:block;font-size:14px;color:#003366}
+
+/* === MAP === */
+#map{width:100%;height:55vh;min-height:320px;border-radius:12px}
+
+/* === QUOTE === */
+.quote-card{background:linear-gradient(135deg,#f5f8fc,#e8ecf0);border-radius:16px;margin:14px 16px;padding:20px;border-left:4px solid #003366}
+.quote-text{font-size:14px;font-style:italic;line-height:1.6;color:#333}
+.quote-sign{font-size:13px;font-weight:700;color:#003366;margin-top:10px;text-align:right}
+
+/* === FOOTER === */
+.footer{text-align:center;padding:20px 16px;font-size:11px;color:#999}
+.footer strong{color:#003366}
+
+/* === MAP LEGEND (overlaid) === */
+.map-legend{position:absolute;bottom:10px;left:10px;z-index:1000;background:rgba(255,255,255,0.92);backdrop-filter:blur(8px);padding:8px 12px;border-radius:10px;font-size:10px;box-shadow:0 2px 10px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:4px}
+.ml-item{display:flex;align-items:center;gap:6px}
+.ml-dot{width:10px;height:10px;border-radius:50%;border:1.5px solid white;box-shadow:0 1px 2px rgba(0,0,0,0.2)}
+.ml-line{width:18px;height:3px;border-radius:2px;box-shadow:0 0 4px rgba(66,133,244,0.4)}
+
+/* Marker styles */
+.pm{width:30px;height:30px;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.4);position:relative}
+.pm .n{color:white;font-weight:900;font-size:12px;font-family:Arial,sans-serif}
+.pm .c{position:absolute;bottom:-6px;right:-4px;width:15px;height:15px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,0.3)}
+.pm .c svg{width:10px;height:10px}
+.pm-a{background:#1a73e8}.pm-n{background:#FF8F00}.pm-r{background:#1a1a1a;border-color:#FFD700}.pm-p{background:#7B1FA2}
+.sm{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#2e7d32,#43a047);border:2.5px solid white;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,0.35)}
+.el{background:linear-gradient(135deg,#2e7d32,#1b5e20);color:white;padding:3px 8px;border-radius:5px;font-weight:800;font-size:9px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.3);border:1.5px solid white}
+.tl{background:rgba(0,51,102,0.9);color:white;padding:2px 6px;border-radius:4px;font-size:7px;font-weight:700;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,0.3)}
+.leaflet-control-attribution{font-size:5px!important}
+</style>
+</head>
+<body class="lang-pt">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">4&ordm; BPM &mdash; PMERJ &mdash; CARNAVAL 2026</div>
+  <h1>Corredor <span>Seguro</span><br>de Mobilidade</h1>
+  <div class="sub">Safe Mobility Corridor &mdash; Shuttle & Tourist Transport</div>
+</div>
+
+<!-- LANG TOGGLE -->
+<div class="lang-toggle">
+  <button class="lang-btn active" id="btnPt" onclick="setLang('pt')">Portugu&ecirc;s</button>
+  <button class="lang-btn" id="btnEn" onclick="setLang('en')">English</button>
+</div>
+
+<!-- ROUTE -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-icon" style="background:#e3f2fd;">🛣️</div>
+    <div class="card-title">
+      <span class="pt-only">Rota Oficial</span>
+      <span class="en-only">Official Route</span>
+      <small class="pt-only">Trajeto recomendado com cobertura policial</small>
+      <small class="en-only">Recommended route with police coverage</small>
+    </div>
+  </div>
+  <div class="route-flow">
+    <span class="route-step">Samb&oacute;dromo</span>
+    <span class="route-arrow">&rarr;</span>
+    <span class="route-step">Av. Salvador de S&aacute;</span>
+    <span class="route-arrow">&rarr;</span>
+    <span class="route-step">R. Est&aacute;cio de S&aacute;</span>
+    <span class="route-arrow">&rarr;</span>
+    <span class="route-step">R. Joaquim Palhares</span>
+    <span class="route-arrow">&rarr;</span>
+    <span class="route-step">Av. Paulo de Frontin</span>
+    <span class="route-arrow">&rarr;</span>
+    <span class="route-step" style="background:rgba(255,215,0,0.25);color:#FFD700;">T&uacute;nel Rebou&ccedil;as &rarr; Zona Sul</span>
+    <div class="route-dest">Lagoa &bull; Copacabana &bull; Ipanema &bull; Leblon &bull; Barra</div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-icon" style="background:#e8f5e9;">🛡️</div>
+    <div class="card-title">
+      <span class="pt-only">Sobre o Corredor</span>
+      <span class="en-only">About the Corridor</span>
+    </div>
+  </div>
+  <div class="bullet-grid">
+    <div class="bullet-card pt-only">
+      <span class="bc-icon">🔵</span>
+      <span>Pontos fixos de policiamento ao longo de <strong>todo o trajeto</strong></span>
+    </div>
+    <div class="bullet-card pt-only">
+      <span class="bc-icon">🟠</span>
+      <span>Patrulhamento m&oacute;vel e apoio t&aacute;tico especializado na <strong>madrugada (0h&ndash;7h)</strong></span>
+    </div>
+    <div class="bullet-card pt-only">
+      <span class="bc-icon">🚁</span>
+      <span>Monitoramento cont&iacute;nuo integrado ao planejamento do <strong>4&ordm; BPM</strong></span>
+    </div>
+    <div class="bullet-card en-only">
+      <span class="bc-icon">🔵</span>
+      <span>Fixed police points along the <strong>entire route</strong></span>
+    </div>
+    <div class="bullet-card en-only">
+      <span class="bc-icon">🟠</span>
+      <span>Mobile patrols and specialized tactical support during <strong>peak hours (midnight&ndash;7am)</strong></span>
+    </div>
+    <div class="bullet-card en-only">
+      <span class="bc-icon">🚁</span>
+      <span>Continuous monitoring integrated into the <strong>4th Battalion</strong> operational plan</span>
+    </div>
+  </div>
+</div>
+
+<!-- MAP -->
+<div class="card" style="padding:12px;position:relative;">
+  <div class="card-header" style="margin-bottom:8px;">
+    <div class="card-icon" style="background:#fff3e0;">📍</div>
+    <div class="card-title">
+      <span class="pt-only">Mapa do Corredor</span>
+      <span class="en-only">Corridor Map</span>
+      <small class="pt-only">Toque nos pontos para detalhes</small>
+      <small class="en-only">Tap points for details</small>
+    </div>
+  </div>
+  <div style="position:relative;border-radius:12px;overflow:hidden;">
+    <div id="map"></div>
+    <div class="map-legend">
+      <div class="ml-item"><div class="ml-dot" style="background:#1a73e8;"></div><span class="pt-only">Ponto fixo 24h</span><span class="en-only">24h Fixed point</span></div>
+      <div class="ml-item"><div class="ml-dot" style="background:#FF8F00;"></div><span class="pt-only">Patrulha noturna</span><span class="en-only">Night patrol</span></div>
+      <div class="ml-item"><div class="ml-dot" style="background:#1a1a1a;border-color:#FFD700;"></div><span class="pt-only">Apoio t&aacute;tico</span><span class="en-only">Tactical support</span></div>
+      <div class="ml-item"><div class="ml-line" style="background:#4285F4;"></div><span class="pt-only">Rota segura</span><span class="en-only">Safe route</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- DRIVERS -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-icon" style="background:#e3f2fd;">🚐</div>
+    <div class="card-title">
+      <span class="pt-only">Para Motoristas</span>
+      <span class="en-only">For Drivers</span>
+      <small class="pt-only">Orienta&ccedil;&otilde;es preventivas</small>
+      <small class="en-only">Preventive guidelines</small>
+    </div>
+  </div>
+  <ul class="tip-list">
+    <li class="tip-item pt-only"><div class="tip-num">1</div><div class="tip-text">Mantenha <strong>portas travadas</strong> e <strong>vidros fechados</strong> durante o deslocamento.</div></li>
+    <li class="tip-item pt-only"><div class="tip-num">2</div><div class="tip-text">Em sem&aacute;foros, mantenha <strong>dist&acirc;ncia segura</strong> do ve&iacute;culo &agrave; frente.</div></li>
+    <li class="tip-item pt-only"><div class="tip-num">3</div><div class="tip-text">Evite <strong>paradas desnecess&aacute;rias</strong> fora do fluxo da via.</div></li>
+    <li class="tip-item pt-only"><div class="tip-num">4</div><div class="tip-text">Oriente passageiros a manter <strong>objetos de valor fora de vista</strong>.</div></li>
+    <li class="tip-item pt-only"><div class="tip-num">5</div><div class="tip-text">Qualquer intercorr&ecirc;ncia: <strong>dirija-se ao ponto policial mais pr&oacute;ximo</strong>.</div></li>
+    <li class="tip-item en-only"><div class="tip-num">1</div><div class="tip-text">Keep <strong>doors locked</strong> and <strong>windows closed</strong> while driving.</div></li>
+    <li class="tip-item en-only"><div class="tip-num">2</div><div class="tip-text">At traffic lights, keep a <strong>safe distance</strong> from the vehicle ahead.</div></li>
+    <li class="tip-item en-only"><div class="tip-num">3</div><div class="tip-text">Avoid <strong>unnecessary stops</strong> outside the traffic flow.</div></li>
+    <li class="tip-item en-only"><div class="tip-num">4</div><div class="tip-text">Advise passengers to keep <strong>valuables out of sight</strong>.</div></li>
+    <li class="tip-item en-only"><div class="tip-num">5</div><div class="tip-text">If any issue arises, <strong>drive to the nearest police point</strong>.</div></li>
+  </ul>
+</div>
+
+<!-- PASSENGERS -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-icon" style="background:#fce4ec;">👥</div>
+    <div class="card-title">
+      <span class="pt-only">Para Passageiros</span>
+      <span class="en-only">For Passengers</span>
+    </div>
+  </div>
+  <div class="bullet-grid">
+    <div class="bullet-card pt-only"><span class="bc-icon">📱</span><span>Guarde celulares e objetos de valor <strong>fora de vista</strong></span></div>
+    <div class="bullet-card pt-only"><span class="bc-icon">🪟</span><span>Evite usar aparelhos com <strong>janelas abertas</strong></span></div>
+    <div class="bullet-card pt-only"><span class="bc-icon">🚗</span><span>Permane&ccedil;a <strong>dentro do ve&iacute;culo</strong> se precisar de apoio policial</span></div>
+    <div class="bullet-card en-only"><span class="bc-icon">📱</span><span>Keep phones and valuables <strong>out of sight</strong></span></div>
+    <div class="bullet-card en-only"><span class="bc-icon">🪟</span><span>Do not use devices with <strong>windows open</strong></span></div>
+    <div class="bullet-card en-only"><span class="bc-icon">🚗</span><span>Remain <strong>inside the vehicle</strong> if police support is needed</span></div>
+  </div>
+</div>
+
+<!-- INCIDENT -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-icon" style="background:#fff3e0;">⚠️</div>
+    <div class="card-title">
+      <span class="pt-only">Em Caso de Ocorr&ecirc;ncia</span>
+      <span class="en-only">In Case of Incident</span>
+    </div>
+  </div>
+  <ul class="tip-list">
+    <li class="tip-item pt-only"><div class="tip-num orange">1</div><div class="tip-text"><strong>Mantenha a calma.</strong></div></li>
+    <li class="tip-item pt-only"><div class="tip-num orange">2</div><div class="tip-text">N&atilde;o confronte situa&ccedil;&otilde;es de risco.</div></li>
+    <li class="tip-item pt-only"><div class="tip-num orange">3</div><div class="tip-text">Sinalize com o <strong>pisca-alerta</strong>.</div></li>
+    <li class="tip-item pt-only"><div class="tip-num orange">4</div><div class="tip-text">Siga at&eacute; o <strong>ponto policial mais pr&oacute;ximo</strong>.</div></li>
+    <li class="tip-item pt-only"><div class="tip-num orange">5</div><div class="tip-text"><strong>Ligue 190.</strong></div></li>
+    <li class="tip-item pt-only"><div class="tip-num orange">6</div><div class="tip-text">Informe caracter&iacute;sticas relevantes &agrave;s equipes.</div></li>
+    <li class="tip-item en-only"><div class="tip-num orange">1</div><div class="tip-text"><strong>Stay calm.</strong></div></li>
+    <li class="tip-item en-only"><div class="tip-num orange">2</div><div class="tip-text">Do not confront risk situations.</div></li>
+    <li class="tip-item en-only"><div class="tip-num orange">3</div><div class="tip-text">Use <strong>hazard lights</strong> to signal.</div></li>
+    <li class="tip-item en-only"><div class="tip-num orange">4</div><div class="tip-text">Drive to the <strong>nearest police point</strong>.</div></li>
+    <li class="tip-item en-only"><div class="tip-num orange">5</div><div class="tip-text"><strong>Call 190.</strong></div></li>
+    <li class="tip-item en-only"><div class="tip-num orange">6</div><div class="tip-text">Provide relevant details to officers.</div></li>
+  </ul>
+</div>
+
+<!-- EMERGENCY -->
+<div class="emergency-card">
+  <div class="em-title">190</div>
+  <div class="em-sub pt-only">Pol&iacute;cia Militar &mdash; 24h &mdash; Gratuito</div>
+  <div class="em-sub en-only">Military Police &mdash; 24h &mdash; Toll-free</div>
+  <a href="tel:190" class="em-btn">📞 <span class="pt-only">LIGAR AGORA</span><span class="en-only">CALL NOW</span></a>
+</div>
+
+<!-- CONTACTS -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-icon" style="background:#e8f5e9;">📋</div>
+    <div class="card-title">
+      <span class="pt-only">Contatos de Emerg&ecirc;ncia</span>
+      <span class="en-only">Emergency Contacts</span>
+    </div>
+  </div>
+  <div class="contact-grid">
+    <a href="tel:+5521978851210" class="contact-item">
+      <span class="ci-icon">🚔</span>
+      <div class="ci-info"><strong>(21) 97885-1210</strong><span class="pt-only">Sala Op. 4&ordm; BPM</span><span class="en-only">4th Bn Ops Room</span></div>
+    </a>
+    <a href="tel:190" class="contact-item">
+      <span class="ci-icon">🚨</span>
+      <div class="ci-info"><strong>190</strong><span class="pt-only">Pol&iacute;cia Militar</span><span class="en-only">Military Police</span></div>
+    </a>
+    <a href="tel:193" class="contact-item">
+      <span class="ci-icon">🚒</span>
+      <div class="ci-info"><strong>193</strong><span class="pt-only">Bombeiros</span><span class="en-only">Fire Dept.</span></div>
+    </a>
+    <a href="tel:192" class="contact-item">
+      <span class="ci-icon">🚑</span>
+      <div class="ci-info"><strong>192</strong><span>SAMU</span></div>
+    </a>
+    <a href="tel:199" class="contact-item">
+      <span class="ci-icon">🏗️</span>
+      <div class="ci-info"><strong>199</strong><span class="pt-only">Defesa Civil</span><span class="en-only">Civil Defense</span></div>
+    </a>
+    <a href="tel:1746" class="contact-item">
+      <span class="ci-icon">🚦</span>
+      <div class="ci-info"><strong>1746</strong><span class="pt-only">CET-Rio Tr&acirc;nsito</span><span class="en-only">CET-Rio Traffic</span></div>
+    </a>
+  </div>
+</div>
+
+<!-- QUOTE -->
+<div class="quote-card">
+  <div class="quote-text pt-only">&ldquo;A mobilidade segura &eacute; parte central do planejamento do 4&ordm; BPM para o Carnaval. A presen&ccedil;a policial ao longo do corredor garante previsibilidade e apoio imediato aos motoristas e visitantes.&rdquo;</div>
+  <div class="quote-text en-only">&ldquo;Safe mobility is central to the 4th Battalion&rsquo;s Carnival planning. Police presence along the corridor ensures predictability and immediate support for drivers and visitors.&rdquo;</div>
+  <div class="quote-sign">Major Thiago &mdash; Subcomandante do 4&ordm; BPM</div>
+</div>
+
+<div class="footer">
+  <strong>4&ordm; Batalh&atilde;o de Pol&iacute;cia Militar &mdash; PMERJ</strong><br>
+  Opera&ccedil;&atilde;o Carnaval 2026 &bull; Servir e Proteger
+</div>
+
+<script>
+// === LANGUAGE TOGGLE ===
+function setLang(lang) {
+  document.body.className = 'lang-' + lang;
+  document.getElementById('btnPt').className = 'lang-btn' + (lang==='pt' ? ' active' : '');
+  document.getElementById('btnEn').className = 'lang-btn' + (lang==='en' ? ' active' : '');
+}
+
+// === MAP ===
+var carSvg='<svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z" fill="#003366"/></svg>';
+var pts=[
+  {n:1,lat:-22.912086,lng:-43.197484,t:'a',l:'Tv. 11 de Maio'},
+  {n:2,lat:-22.912392,lng:-43.199423,t:'a',l:'Carmo Neto'},
+  {n:3,lat:-22.912509,lng:-43.200101,t:'a',l:'Laura de Ara\u00fajo'},
+  {n:4,lat:-22.912700,lng:-43.201500,t:'p',l:'Escola Est\u00e1cio de S\u00e1'},
+  {n:5,lat:-22.913008,lng:-43.202825,t:'a',l:'Frei Caneca'},
+  {n:6,lat:-22.914233,lng:-43.205022,t:'a',l:'Maia de Lacerda'},
+  {n:7,lat:-22.914551,lng:-43.207573,t:'a',l:'Joaquim Palhares'},
+  {n:8,lat:-22.913343,lng:-43.209794,t:'a',l:'Paulo de Frontin'},
+  {n:9,lat:-22.916800,lng:-43.210100,t:'r',l:'Haddock Lobo'},
+  {n:10,lat:-22.924800,lng:-43.209600,t:'n',l:'R. do Bispo'},
+  {n:11,lat:-22.918800,lng:-43.209900,t:'n',l:'Bar\u00e3o de Itapagipe'},
+  {n:12,lat:-22.931600,lng:-43.209700,t:'n',l:'Hospital CBMERJ'},
+  {n:13,lat:-22.935017,lng:-43.209576,t:'a',l:'T\u00fanel Rebou\u00e7as'}
+];
+var route=[
+  [-22.9095,-43.1985],[-22.9105,-43.1980],[-22.9113,-43.1977],
+  [-22.912086,-43.197484],[-22.9121,-43.1983],[-22.912392,-43.199423],
+  [-22.912509,-43.200101],[-22.9127,-43.2015],[-22.913008,-43.202825],
+  [-22.9135,-43.2038],[-22.914233,-43.205022],[-22.9143,-43.2062],
+  [-22.914551,-43.207573],[-22.9143,-43.2085],[-22.913343,-43.209794],
+  [-22.9145,-43.2100],[-22.9160,-43.2100],[-22.916800,-43.210100],
+  [-22.9178,-43.2100],[-22.918800,-43.209900],[-22.9205,-43.2098],
+  [-22.9225,-43.2097],[-22.924800,-43.209600],[-22.9270,-43.2097],
+  [-22.9290,-43.2097],[-22.931600,-43.209700],[-22.9330,-43.2097],
+  [-22.935017,-43.209576]
+];
+var map=L.map('map',{zoomControl:true,attributionControl:false}).fitBounds(L.latLngBounds(route).pad(0.05));
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:19}).addTo(map);
+L.polyline(route,{color:'#1a73e8',weight:14,opacity:0.18,lineCap:'round',lineJoin:'round',smoothFactor:1}).addTo(map);
+L.polyline(route,{color:'#4285F4',weight:6,opacity:0.9,lineCap:'round',lineJoin:'round',smoothFactor:1}).addTo(map);
+L.polyline(route,{color:'#80b4ff',weight:2.5,opacity:0.5,lineCap:'round',lineJoin:'round',smoothFactor:1}).addTo(map);
+function mc(t){return t==='a'?'pm-a':t==='n'?'pm-n':t==='r'?'pm-r':'pm-p';}
+pts.forEach(function(p){
+  L.marker([p.lat,p.lng],{icon:L.divIcon({className:'',html:'<div class="pm '+mc(p.t)+'"><span class="n">'+p.n+'</span><div class="c">'+carSvg+'</div></div>',iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-18]})}).addTo(map).bindPopup('<b style="color:#003366;font-size:14px;">'+p.n+'</b><br><span style="font-size:12px;">'+p.l+'</span>',{closeButton:false});
+});
+L.marker([-22.9095,-43.1985],{icon:L.divIcon({className:'',html:'<div class="sm"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6h-5.6z" fill="white"/></svg></div>',iconSize:[34,34],iconAnchor:[17,17]})}).addTo(map).bindPopup('<b style="color:#2e7d32;">SAMB\u00d3DROMO</b>',{closeButton:false});
+L.marker([-22.9358,-43.2105],{icon:L.divIcon({className:'',html:'<div class="el">T\u00daNEL \u2192 ZONA SUL</div>',iconSize:[120,20],iconAnchor:[60,10]}),interactive:false}).addTo(map);
+function lbl(a,b,t){L.marker([a,b],{icon:L.divIcon({className:'',html:'<div class="tl">'+t+'</div>',iconSize:[110,14],iconAnchor:[55,7]}),interactive:false}).addTo(map);}
+lbl(-22.9108,-43.1960,'TRECHO 1: SALVADOR DE S\u00c1');
+lbl(-22.9155,-43.2065,'TRECHO 2: EST\u00c1CIO / PALHARES');
+lbl(-22.9260,-43.2075,'TRECHO 3: PAULO DE FRONTIN');
+</script>
+</body>
+</html>
